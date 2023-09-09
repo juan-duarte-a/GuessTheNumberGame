@@ -1,7 +1,6 @@
 const guesses = document.getElementById("guesses");
 const lastResult = document.getElementById("lastResult");
 const lowOrHigh = document.getElementById("lowOrHigh");
-
 const guessSubmit = document.getElementById("guessSubmit");
 const guessField = document.getElementById("guessField");
 
@@ -13,7 +12,6 @@ class RandomNumber {
 
     generate() {
         this.#value = Math.floor(Math.random() * 100) + 1;
-        console.log(this.#value);
     }
 
     compare(number) {
@@ -30,6 +28,52 @@ class RandomNumber {
 const randomNumber = new RandomNumber();
 randomNumber.generate();
 
+function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function launchConfetti() {
+    const defaults = {
+        ticks: 50,
+        gravity: 0,
+        decay: 0.92,
+        startVelocity: 20,
+    };
+
+    function shoot() {
+        confetti({
+            ...defaults,
+            scalar: 2,
+            shapes: ["circle", "square"],
+            colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+            angle: randomInRange(55, 125),
+            spread: randomInRange(50, 70),
+            particleCount: randomInRange(20, 40),
+            origin: { x: randomInRange(0.3, 0.7), y: 0.4 },
+        });
+
+        confetti({
+            ...defaults,
+            scalar: 2.5,
+            shapes: ["text"],
+            shapeOptions: {
+                text: {
+                    value: ["🦄", "🌈"],
+                },
+            },
+            angle: randomInRange(55, 125),
+            spread: randomInRange(50, 70),
+            particleCount: randomInRange(20, 40),
+            origin: { x: randomInRange(0.3, 0.7), y: 0.4 },
+        });
+    }
+
+    for (let i = 0; i < 7000; i += 1000) {
+        setTimeout(shoot, i);
+    }
+
+}
+
 function checkGuess() {
     const userGuess = Number(guessField.value);
 
@@ -44,7 +88,8 @@ function checkGuess() {
         lastResult.style.backgroundColor = "mediumseagreen";
         lowOrHigh.textContent = "";
         setGameOver();
-    } else if (guessCount === 10) {
+        launchConfetti();
+    } else if (guessCount === 5) {
         lastResult.textContent = "GAME OVER!";
         lowOrHigh.textContent = "";
         setGameOver();
@@ -83,7 +128,7 @@ function resetGame() {
     }
 
     resetButton.parentNode.removeChild(resetButton);
-    
+
     randomNumber.generate();
 
     guessField.disabled = false;
@@ -97,7 +142,7 @@ guessSubmit.addEventListener("click", checkGuess);
 
 guessField.addEventListener("keyup", (guessField) => {
     if (guessField.key === "Enter") {
-      checkGuess();
+        checkGuess();
     }
 });
 
