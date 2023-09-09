@@ -7,13 +7,28 @@ const guessField = document.getElementById("guessField");
 
 let guessCount = 1;
 let resetButton;
-let randomNumber;
 
-function updateRandomNumber() {
-    randomNumber = Math.floor(Math.random() * 100) + 1;
+class RandomNumber {
+    #value;
+
+    generate() {
+        this.#value = Math.floor(Math.random() * 100) + 1;
+        console.log(this.#value);
+    }
+
+    compare(number) {
+        if (number === this.#value) {
+            return 0;
+        } else if (number < this.#value) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
 }
 
-updateRandomNumber();
+const randomNumber = new RandomNumber();
+randomNumber.generate();
 
 function checkGuess() {
     const userGuess = Number(guessField.value);
@@ -24,7 +39,7 @@ function checkGuess() {
         guesses.textContent = `${guesses.textContent}, ${userGuess}`;
     }
 
-    if (userGuess === randomNumber) {
+    if (randomNumber.compare(userGuess) === 0) {
         lastResult.textContent = "Congratulations! You got it right!";
         lastResult.style.backgroundColor = "mediumseagreen";
         lowOrHigh.textContent = "";
@@ -37,9 +52,9 @@ function checkGuess() {
         lastResult.textContent = "Wrong!";
         lastResult.style.backgroundColor = "lightcoral";
 
-        if (userGuess < randomNumber) {
+        if (randomNumber.compare(userGuess) < 0) {
             lowOrHigh.textContent = "Last guess was too low!";
-        } else if (userGuess > randomNumber) {
+        } else if (randomNumber.compare(userGuess) > 0) {
             lowOrHigh.textContent = "Last guess was too high!";
         }
     }
@@ -69,7 +84,7 @@ function resetGame() {
 
     resetButton.parentNode.removeChild(resetButton);
     
-    updateRandomNumber();
+    randomNumber.generate();
 
     guessField.disabled = false;
     guessSubmit.disabled = false;
@@ -87,7 +102,6 @@ guessField.addEventListener("keyup", (guessField) => {
 });
 
 function checkViewportWidth() {
-    console.log("hey!");
     if (window.innerWidth < 750) {
         document.body.style.fontSize = "3vw";
     } else {
